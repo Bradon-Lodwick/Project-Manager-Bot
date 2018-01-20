@@ -1,0 +1,6 @@
+# Variables associated with the discord bot
+bot:
+  # The token of the bot
+  token: "replace-with-your-bot-token"
+  # The command symbol of the bot
+  symbol: "!"
