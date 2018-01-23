@@ -1,7 +1,22 @@
+# -*- coding: utf-8 -*-
+""" This file contains all of the commands and startup processes to run the project manager bot.
+
+Explanation
+-----------
+* The bot is created through the commands.Bot function from the discord.py library.
+* @bot.event on_ready() is used to print information about the bot on startup.
+* @bot.commands is used to create commands for users to use when interacting with the bot.
+* bot.run is used to actually start the bot.
+
+Todo
+----
+*
+
+"""
 import discord  # Used for basic discord api functionality
 from discord.ext import commands  # Used to create commands for the bot
-import asyncio  # Used for asynchronous processing
 import ruamel.yaml as yaml  # Used to access yaml settings files
+import database  # Used to interact with the database
 
 
 # Get config settings from the settings.yml file
@@ -27,11 +42,15 @@ async def on_ready():
 @bot.command(pass_context=True)
 async def create_group(ctx, name):
     """ Creates a new group by making a role and role-locked text and voice channels for that group.
+    Sends a message saying whether or not the command was successful.
 
-    :param ctx: The context of the message
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context of the message.
+    name : str
+        The desired name for the group. Will be role name and prefix the chats.
 
-    :param name: The desired name for the group. Will be role name and prefix the chats.
-    :type name: str
     """
     # The guild the message was sent in
     guild = ctx.message.guild
@@ -67,12 +86,16 @@ async def create_group(ctx, name):
         await channel.send(content="Use only letters as the group name.")
 
 
-# Adds a user to a group, if the user running the command is in the group
-@ bot.command(pass_context=True)
+@bot.command(pass_context=True)
 async def add_to_group(ctx):
     """ Adds the given group role to the users mentioned. Must already have the role in order to add the users to it.
+    Sends a message to the channel that the command was sent through saying whether the command was successful.
 
-    :param ctx: The context of the message.
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context of the message.
+
     """
     # Gets the author of the message
     author = ctx.message.author
@@ -103,5 +126,80 @@ async def add_to_group(ctx):
             await channel.send(content="I don't have permissions to give user roles.")
 
 
-# Runs the bot
-bot.run(cfg['bot']['token'])
+@bot.command(pass_context=True)
+async def ins_def(ctx, command, definition):
+    """ Inserts a definition into the definition database.
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context of the message.
+    command : str
+        The command for the definition to be stored.
+    definition : str
+        The definition to be stored.
+
+    """
+    # Gets the guild from the context
+    guild = ctx.message.guild
+    # Gets the channel from the context
+    channel = ctx.message.channel
+    # Inserts the definition into the database
+    database.ins_def(cfg['db']['path'], guild.id, command, definition, commit=True)
+    # Sends a success message
+    await channel.send("Definition added!")
+
+
+@bot.command(pass_context=True)
+async def get_def(ctx, command):
+    """ Gets a definition from the definition database.
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context of the message.
+    command : str
+        The command for the desired definition.
+
+    """
+    # Gets the guild from the context
+    guild = ctx.message.guild
+    # Gets the channel from the context
+    channel = ctx.message.channel
+    # Gets the definition from the database
+    definition = database.get_def(cfg['db']['path'], guild.id, command)
+    # Checks to see if the definition existed
+    if definition is not None:
+        # Sends the definition
+        await channel.send(definition)
+    else:
+        # Sends an error message
+        await channel.send("That definition doesn't exist in the database.")
+
+
+@bot.command(pass_context=True)
+async def del_def(ctx, command):
+    """ Deletes a definition from the database.
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        The context of the message.
+    command : str
+        The command of the definition to have removed from the database.
+
+    """
+    # Gets the guild from the context
+    guild = ctx.message.guild
+    # Gets the channel from the context
+    channel = ctx.message.channel
+    # Removes the definition from the database
+    database.del_def(cfg['db']['path'], guild.id, command, commit=True)
+    # Sends a success message
+    await channel.send("Definition removed from the database!")
+
+
+if __name__ == "__main__":
+    """ The main function of the bot, which is used to actually start the bot."""
+    # Runs the bot
+    bot.run(cfg['bot']['token'])
