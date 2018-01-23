@@ -4,3 +4,7 @@ bot:
   token: "replace-with-your-bot-token"
   # The command symbol of the bot
   symbol: "!"
+# Variables associated with the database
+db:
+  # The path to the database
+  path: "databases/pm.db"
