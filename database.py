@@ -124,7 +124,13 @@ def ins_def(path, server, command, definition, commit=False):
     commit : bool
         Whether or not changes should be committed.
 
+    Returns
+    -------
+    bool
+        Returns whether inputting the new definition was successful or not.
+
     """
+
     # Opens the database connection to retrieve the cursor
     with connect(path, commit=commit) as c:
         # The sql that will be used to insert the definition
@@ -137,6 +143,11 @@ def ins_def(path, server, command, definition, commit=False):
             '''
         # Executes the sql to insert the command into the database
         c.execute(sql, (server, command, definition))
+        # Return True to signal the definition has been successfully inserted
+        return True
+
+    # Return False to signal the definition has not been successfully inserted
+    return False
 
 
 def get_def(path, server, command):

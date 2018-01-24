@@ -8,8 +8,8 @@ Todo
 """
 
 from discord.ext import commands  # Used to create commands for the bot to use
-import database  # Used to connect to the database
 from settings import *  # Imports all of the settings variables
+
 
 class General:
     """ Commands that are used to interact with server-specific definitions. Useful for storing keyword definitions

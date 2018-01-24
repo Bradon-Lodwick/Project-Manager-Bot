@@ -50,10 +50,18 @@ class Definitions:
         guild = ctx.message.guild
         # Gets the channel from the context
         channel = ctx.message.channel
-        # Inserts the definition into the database
-        database.ins_def(db_settings['path'], guild.id, command, definition, commit=True)
-        # Sends a success message
-        await channel.send("Definition added!")
+        # Tries to insert the definition into the database, getting whether or not it was successful in doing so
+        success = database.ins_def(db_settings['path'], guild.id, command, definition, commit=True)
+        # If insert successful, sends a success message
+        if success:
+            # Sends a success message
+            await channel.send("Definition added!")
+        # If unsuccessful, and definition exists, output that the command already exists
+        elif not success and database.get_def(db_settings['path'], guild.id, command) is not None:
+            await channel.send("Definition already exists, delete the definition first or use a different keyword.")
+        # If unsuccessful, and definition doesn't exist, output an error occurred
+        else:
+            await channel.send("There was an error inserting the definition, please try again.")
 
     @commands.command(pass_context=True)
     async def get_def(self, ctx, command):
