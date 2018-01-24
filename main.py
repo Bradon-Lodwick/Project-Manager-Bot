@@ -51,6 +51,7 @@ if __name__ == "__main__":
     for file in glob.glob("{}*.py".format(bot_settings['c_path'])):
         # Converts the file name to the acceptable string for the load_extension method
         file = file.rstrip('.py')  # Strips the .py extension
+        file = file.replace('/', '.')  # Replaces the /'s in the path with .'s
         file = file.replace('\\', '.')  # Replaces the \'s in the path with .'s
         # Tries to load the given extension
         try:
