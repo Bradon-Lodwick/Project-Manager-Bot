@@ -35,6 +35,9 @@ class Groups:
         """ Creates a new group by making a role and role-locked text and voice channels for that group.
         Sends a message saying whether or not the command was successful.
 
+        Format: !create_group group_name
+        where group_name is the intended name of group
+
         Parameters
         ----------
         ctx : discord.ext.commands.Context
@@ -83,6 +86,9 @@ class Groups:
         """ Adds the given group role to the users mentioned. Must already have the role in order to add the users to it.
         Sends a message to the channel that the command was sent through saying whether the command was successful.
 
+        Format: !add_to_group @_group_name_ @user1 @user2 @user3...
+        Where group name is the name of the group and users are the intended members
+
         Parameters
         ----------
         ctx : discord.ext.commands.Context
@@ -95,13 +101,13 @@ class Groups:
         channel = ctx.message.channel
         # Checks to see that only 1 role was mentioned
         if len(ctx.message.role_mentions) != 1:
-            await channel.send(content="Please mention the role (only 1 role) that you would like to add the users to.")
+            await channel.send(content="Please mention the group (only 1 group) that you would like to add the users to.")
         # Checks to see if the role mentioned is in the user's role list
         elif ctx.message.role_mentions[0] not in author.roles:
-            await channel.send(content="You must belong to the role in order to add users to it.")
+            await channel.send(content="You must belong to the group in order to add users to it.")
         # Checks to see if the user mentioned any users
         elif len(ctx.message.mentions) < 1:
-            await channel.send(content="Please mention the users that you would like to have added to the role.")
+            await channel.send(content="Please mention the users that you would like to have added to the group.")
         # Adds the users to the given role, as all security checks have passed
         else:
             # Try to add the users to the role
@@ -112,7 +118,7 @@ class Groups:
                     if ctx.message.role_mentions[0] not in user.roles:
                         # Adds the role to the user
                         await user.add_roles(ctx.message.role_mentions[0])
-                await channel.send(content="The given users have been successfully added to the given role.")
+                await channel.send(content="The given users have been successfully added to the given group.")
             # Exceptions in the case of the bot not having permissions
             except discord.Forbidden:
                 await channel.send(content="I don't have permissions to give user roles.")

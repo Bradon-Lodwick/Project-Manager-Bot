@@ -33,6 +33,9 @@ class Wiki:
     async def wiki(self, ctx, subject):
         """ Searches wikipedia for a brief summary of a given term or concept.
 
+        Format: !wiki search
+        Where search is the topic to be searched on wikipedia
+
         Parameters
         ----------
         ctx : discord.ext.commands.Context
