@@ -9,7 +9,7 @@ idna==2.6
 multidict==4.0.0
 pycparser==2.18
 PyNaCl==1.1.2
-requests==2.18.4
+requests==2.20
 six==1.11.0
 urllib3==1.22
 websockets==3.4
